@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ติดตาม — IT Borrow System</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>body{font-family:'Sarabun',sans-serif;}</style>
+</head>
+<body class="bg-gray-100 min-h-screen">
+
+<div id="layout-wrapper" class="ml-64 pt-16 min-h-screen">
+  <main class="p-6">
+    <div class="flex items-center justify-between mb-6">
+      <div><h1 class="text-xl font-bold text-gray-900">ติดตามการยืม</h1>
+      <p class="text-sm text-gray-500 mt-0.5">รายการที่กำลังยืมอยู่ทั้งหมด</p></div>
+      <button onclick="loadData()" class="flex items-center gap-2 border border-gray-300 bg-white hover:bg-gray-50 text-gray-700 px-4 py-2 rounded-xl text-sm font-medium transition">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 .49-3.64"></path></svg>
+        รีเฟรช
+      </button>
+    </div>
+
+    <!-- Legend -->
+    <div class="flex gap-3 mb-5 flex-wrap">
+      <span class="flex items-center gap-1.5 text-sm text-gray-600"><span class="w-2.5 h-2.5 rounded-full bg-red-500 inline-block"></span>เกินกำหนด</span>
+      <span class="flex items-center gap-1.5 text-sm text-gray-600"><span class="w-2.5 h-2.5 rounded-full bg-yellow-400 inline-block"></span>ใกล้ครบกำหนด (≤3 วัน)</span>
+      <span class="flex items-center gap-1.5 text-sm text-gray-600"><span class="w-2.5 h-2.5 rounded-full bg-green-500 inline-block"></span>ปกติ</span>
+    </div>
+
+    <div id="track-list"><div class="flex items-center justify-center py-16 text-gray-400"><svg class="animate-spin w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path></svg>กำลังโหลด...</div></div>
+  </main>
+</div>
+
+<div id="toast" class="fixed bottom-6 right-6 px-4 py-3 rounded-xl text-sm font-medium shadow-lg z-50 opacity-0 transition-opacity pointer-events-none"></div>
+
+<script src="js/config.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/layout.js"></script>
+<script>
+var ME = requireAdmin();
+if (ME) {
+  renderLayout('tracking');
+  loadData();
+
+  function loadData() {
+    document.getElementById('track-list').innerHTML = loadingHtml();
+    api({ action: 'getTracking' }).then(function(data) {
+      var items = data.items || [];
+      var el = document.getElementById('track-list');
+      if (!items.length) {
+        el.innerHTML = '<div class="bg-white rounded-2xl border border-gray-200 text-center py-16 text-sm text-gray-400">ไม่มีรายการที่กำลังยืม 🎉</div>';
+        return;
+      }
+
+      // Sort: overdue first, then warning, then ok
+      var order = { overdue:0, warning:1, ok:2, unknown:3 };
+      items.sort(function(a,b){ return (order[a.urgency]||3) - (order[b.urgency]||3); });
+
+      var urgencyConfig = {
+        overdue: { dot:'bg-red-500', badge:'bg-red-100 text-red-700', label:'เกินกำหนด' },
+        warning: { dot:'bg-yellow-400', badge:'bg-yellow-100 text-yellow-700', label:'ใกล้ครบกำหนด' },
+        ok:      { dot:'bg-green-500', badge:'bg-green-100 text-green-700', label:'ปกติ' },
+        unknown: { dot:'bg-gray-400',  badge:'bg-gray-100 text-gray-600',   label:'ไม่ระบุ' }
+      };
+
+      var statusMap = { active:'กำลังยืม', pending_return:'รอคืน' };
+
+      el.innerHTML = '<div class="bg-white rounded-2xl border border-gray-200 overflow-hidden"><div class="overflow-x-auto"><table class="w-full text-sm">'
+        + '<thead><tr class="bg-gray-50 border-b border-gray-200">'
+        + '<th class="text-left px-5 py-3.5 font-semibold text-gray-600">พนักงาน</th>'
+        + '<th class="text-left px-5 py-3.5 font-semibold text-gray-600">แผนก</th>'
+        + '<th class="text-left px-5 py-3.5 font-semibold text-gray-600">สถานะ</th>'
+        + '<th class="text-left px-5 py-3.5 font-semibold text-gray-600">วันคืน</th>'
+        + '<th class="text-center px-5 py-3.5 font-semibold text-gray-600">สถานการณ์</th>'
+        + '</tr></thead><tbody>'
+        + items.map(function(r) {
+          var cfg = urgencyConfig[r.urgency] || urgencyConfig.unknown;
+          var daysLabel = r.daysLeft == null ? '—'
+            : r.daysLeft < 0 ? 'เกิน ' + Math.abs(r.daysLeft) + ' วัน'
+            : r.daysLeft === 0 ? 'วันนี้!'
+            : 'อีก ' + r.daysLeft + ' วัน';
+          return '<tr class="border-b border-gray-100 hover:bg-gray-50 transition">'
+            + '<td class="px-5 py-4"><div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full '+cfg.dot+' flex-shrink-0"></span><div><p class="font-medium text-gray-900">'+r.empName+'</p><p class="text-xs text-gray-400">'+r.empId+'</p></div></div></td>'
+            + '<td class="px-5 py-4 text-gray-600">'+(r.dept||'—')+'</td>'
+            + '<td class="px-5 py-4"><span class="px-2.5 py-1 bg-blue-50 text-blue-700 rounded-full text-xs font-medium">'+(statusMap[r.status]||r.status)+'</span></td>'
+            + '<td class="px-5 py-4 text-gray-600">'+(r.returnDate||'—')+'</td>'
+            + '<td class="px-5 py-4 text-center"><span class="px-2.5 py-1 rounded-full text-xs font-semibold '+cfg.badge+'">'+daysLabel+'</span></td>'
+            + '</tr>';
+        }).join('')
+        + '</tbody></table></div></div>';
+    });
+  }
+}
+</script>
+</body>
+</html>

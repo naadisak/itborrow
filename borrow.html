@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ยืมอุปกรณ์ — IT Borrow System</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>body{font-family:'Sarabun',sans-serif;} #lightbox{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:999;align-items:center;justify-content:center;} #lightbox.open{display:flex;}</style>
+</head>
+<body class="bg-gray-100 min-h-screen">
+
+<div id="layout-wrapper" class="ml-64 pt-16 min-h-screen">
+  <main class="p-6">
+    <div class="flex items-center justify-between mb-6">
+      <div><h1 class="text-xl font-bold text-gray-900">ยืมอุปกรณ์</h1>
+      <p class="text-sm text-gray-500 mt-0.5">เลือกอุปกรณ์ที่ต้องการยืม</p></div>
+      <button onclick="openCart()" class="relative flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-xl text-sm font-semibold transition">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 01-8 0"></path></svg>
+        ตะกร้า <span id="cart-badge" class="bg-white text-blue-600 font-bold text-xs rounded-full w-5 h-5 flex items-center justify-center">0</span>
+      </button>
+    </div>
+
+    <!-- Search -->
+    <div class="bg-white rounded-2xl border border-gray-200 p-4 mb-4">
+      <input id="search-eq" type="text" placeholder="ค้นหาอุปกรณ์..." onkeyup="filterEq()" class="w-full border border-gray-300 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+    </div>
+
+    <div id="eq-grid"><div class="flex items-center justify-center py-16 text-gray-400"><svg class="animate-spin w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path></svg>กำลังโหลด...</div></div>
+  </main>
+</div>
+
+<!-- Cart Modal -->
+<div id="modal-cart" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4">
+  <div class="bg-white rounded-2xl w-full max-w-lg p-6 shadow-2xl max-h-[90vh] overflow-y-auto">
+    <div class="flex items-center justify-between mb-5">
+      <h3 class="font-bold text-gray-900 text-lg">ตะกร้ายืม</h3>
+      <button onclick="document.getElementById('modal-cart').classList.add('hidden')" class="text-gray-400 hover:text-gray-600"><svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+    </div>
+    <div id="cart-items" class="mb-4"></div>
+    <div class="space-y-3 mb-4">
+      <div><label class="block text-sm font-medium text-gray-700 mb-1">วัตถุประสงค์ *</label>
+      <input id="borrow-purpose" type="text" placeholder="เช่น ใช้งานโปรเจค X" class="w-full border border-gray-300 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"></div>
+      <div><label class="block text-sm font-medium text-gray-700 mb-1">วันที่คาดว่าจะคืน *</label>
+      <input id="borrow-retdate" type="date" class="w-full border border-gray-300 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"></div>
+    </div>
+    <div id="err-cart" class="hidden bg-red-50 text-red-600 text-sm px-4 py-3 rounded-xl border border-red-200 mb-4"></div>
+    <div class="flex gap-3">
+      <button onclick="document.getElementById('modal-cart').classList.add('hidden')" class="flex-1 border border-gray-300 text-gray-700 py-2.5 rounded-xl text-sm font-medium hover:bg-gray-50 transition">ยกเลิก</button>
+      <button onclick="submitBorrow()" id="btn-submit-borrow" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2.5 rounded-xl text-sm font-semibold transition">ส่งคำขอยืม</button>
+    </div>
+  </div>
+</div>
+
+<!-- Lightbox -->
+<div id="lightbox">
+  <button onclick="closeLb()" class="absolute top-4 right-4 text-white text-2xl hover:text-gray-300">✕</button>
+  <button onclick="lbNav(-1)" class="absolute left-4 text-white text-3xl hover:text-gray-300 px-4 py-8">‹</button>
+  <img id="lb-img" src="" class="max-w-[85vw] max-h-[85vh] rounded-xl object-contain">
+  <button onclick="lbNav(1)" class="absolute right-4 text-white text-3xl hover:text-gray-300 px-4 py-8">›</button>
+</div>
+
+<div id="toast" class="fixed bottom-6 right-6 px-4 py-3 rounded-xl text-sm font-medium shadow-lg z-50 opacity-0 transition-opacity pointer-events-none"></div>
+
+<script src="js/config.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/layout.js"></script>
+<script>
+var ME = requireAuth();
+if (ME) {
+  if (ME.role === 'admin') { window.location.href = 'index.html'; }
+  renderLayout('borrow');
+
+  var ALL_EQ = [], CART = [];
+  var LB_IMGS = [], LB_IDX = 0;
+
+  loadEq();
+
+  function loadEq() {
+    api({ action: 'getEquipment' }).then(function(data) {
+      ALL_EQ = data.items || [];
+      renderGrid(ALL_EQ);
+    });
+  }
+
+  function filterEq() {
+    var q = document.getElementById('search-eq').value.toLowerCase();
+    renderGrid(ALL_EQ.filter(function(e){ return (e.name||'').toLowerCase().includes(q)||(e.category||'').toLowerCase().includes(q); }));
+  }
+
+  function renderGrid(items) {
+    var el = document.getElementById('eq-grid');
+    if (!items.length) { el.innerHTML = '<div class="text-center py-16 text-gray-400 text-sm">ไม่พบอุปกรณ์</div>'; return; }
+    el.innerHTML = '<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">'
+      + items.map(function(eq) {
+        var inCart = CART.find(function(c){ return c.itemId === eq.itemId; });
+        var thumb = eq.images && eq.images[0]
+          ? '<img src="'+eq.images[0]+'" class="w-full h-40 object-cover rounded-xl mb-3 cursor-pointer hover:opacity-90 transition" onclick=\'openLb('+JSON.stringify(eq.images)+',0)\'>'
+          : '<div class="w-full h-40 bg-gray-100 rounded-xl mb-3 flex items-center justify-center text-gray-400 text-sm">ไม่มีรูป</div>';
+        var avail = eq.availStock > 0;
+        return '<div class="bg-white rounded-2xl border border-gray-200 p-4">'
+          + thumb
+          + '<div class="flex items-start justify-between gap-2 mb-1">'
+          + '<p class="font-semibold text-gray-900 text-sm leading-tight">'+eq.name+'</p>'
+          + '<span class="px-2 py-0.5 rounded-full text-xs font-medium flex-shrink-0 '+(avail?'bg-green-100 text-green-700':'bg-red-100 text-red-700')+'">'+(avail?'ว่าง '+eq.availStock:'หมด')+'</span>'
+          + '</div>'
+          + '<p class="text-xs text-gray-400 mb-3">'+( eq.assetCode||'' )+(eq.category?' · '+eq.category:'')+'</p>'
+          + (avail
+            ? (inCart
+              ? '<button onclick="removeFromCart(\''+eq.itemId+'\')" class="w-full border-2 border-blue-600 text-blue-600 py-2 rounded-xl text-sm font-semibold hover:bg-blue-50 transition">✓ ในตะกร้าแล้ว</button>'
+              : '<button onclick=\'addToCart('+JSON.stringify(eq)+')\' class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-xl text-sm font-semibold transition">+ เพิ่มในตะกร้า</button>'
+            )
+            : '<button disabled class="w-full bg-gray-100 text-gray-400 py-2 rounded-xl text-sm font-semibold cursor-not-allowed">หมดสต็อก</button>'
+          )
+          + '</div>';
+      }).join('') + '</div>';
+  }
+
+  function addToCart(eq) {
+    if (!CART.find(function(c){ return c.itemId===eq.itemId; })) {
+      CART.push({ itemId:eq.itemId, itemName:eq.name, qty:1, avail:eq.availStock });
+    }
+    updateCartBadge();
+    renderGrid(ALL_EQ);
+    showToast('เพิ่มในตะกร้าแล้ว', 'ok');
+  }
+  function removeFromCart(id) {
+    CART = CART.filter(function(c){ return c.itemId !== id; });
+    updateCartBadge();
+    renderGrid(ALL_EQ);
+  }
+  function updateCartBadge() { document.getElementById('cart-badge').textContent = CART.length; }
+
+  function openCart() {
+    var el = document.getElementById('cart-items');
+    if (!CART.length) { el.innerHTML = '<p class="text-sm text-gray-400 text-center py-6">ยังไม่มีรายการ</p>'; }
+    else {
+      el.innerHTML = '<div class="space-y-2 mb-4">'
+        + CART.map(function(c) {
+          return '<div class="flex items-center justify-between bg-gray-50 rounded-xl px-4 py-3">'
+            + '<div><p class="text-sm font-medium text-gray-800">'+c.itemName+'</p></div>'
+            + '<div class="flex items-center gap-2">'
+            + '<button onclick="changeQty(\''+c.itemId+'\',-1)" class="w-7 h-7 rounded-lg bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold flex items-center justify-center transition">−</button>'
+            + '<span class="w-8 text-center text-sm font-semibold" id="qty-'+c.itemId+'">'+c.qty+'</span>'
+            + '<button onclick="changeQty(\''+c.itemId+'\',1)" class="w-7 h-7 rounded-lg bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold flex items-center justify-center transition">+</button>'
+            + '<button onclick="removeFromCart(\''+c.itemId+'\');openCart()" class="ml-1 text-red-400 hover:text-red-600 transition"><svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-1 14H6L5 6"></path></svg></button>'
+            + '</div></div>';
+        }).join('') + '</div>';
+    }
+    document.getElementById('err-cart').classList.add('hidden');
+    document.getElementById('modal-cart').classList.remove('hidden');
+  }
+
+  function changeQty(id, delta) {
+    var item = CART.find(function(c){ return c.itemId===id; });
+    if (!item) return;
+    item.qty = Math.max(1, Math.min(item.avail, item.qty + delta));
+    var el = document.getElementById('qty-'+id);
+    if (el) el.textContent = item.qty;
+  }
+
+  function submitBorrow() {
+    if (!CART.length) { showCartErr('กรุณาเพิ่มอุปกรณ์ก่อน'); return; }
+    var purpose = document.getElementById('borrow-purpose').value.trim();
+    var retDate = document.getElementById('borrow-retdate').value;
+    if (!purpose) { showCartErr('กรุณากรอกวัตถุประสงค์'); return; }
+    if (!retDate) { showCartErr('กรุณาระบุวันที่คาดว่าจะคืน'); return; }
+
+    var btn = document.getElementById('btn-submit-borrow');
+    btn.disabled = true; btn.textContent = 'กำลังส่งคำขอ...';
+
+    api({ action:'createRequest', empId:ME.empId, purpose:purpose,
+          returnDateProposed:retDate, items:JSON.stringify(CART.map(function(c){ return {itemId:c.itemId,itemName:c.itemName,qty:c.qty}; })) })
+      .then(function(d) {
+        if (d.error) throw new Error(d.error);
+        CART = [];
+        updateCartBadge();
+        document.getElementById('modal-cart').classList.add('hidden');
+        renderGrid(ALL_EQ);
+        showToast('ส่งคำขอเรียบร้อย รอ admin อนุมัติ', 'ok');
+      }).catch(function(err) {
+        showCartErr(err.message);
+      }).finally(function() {
+        btn.disabled = false; btn.textContent = 'ส่งคำขอยืม';
+      });
+  }
+  function showCartErr(msg) { var el = document.getElementById('err-cart'); el.textContent=msg; el.classList.remove('hidden'); }
+
+  // Lightbox
+  function openLb(imgs, idx) { LB_IMGS = imgs; LB_IDX = idx; document.getElementById('lb-img').src=LB_IMGS[LB_IDX]; document.getElementById('lightbox').classList.add('open'); }
+  function closeLb() { document.getElementById('lightbox').classList.remove('open'); }
+  function lbNav(d) { LB_IDX = (LB_IDX + d + LB_IMGS.length) % LB_IMGS.length; document.getElementById('lb-img').src = LB_IMGS[LB_IDX]; }
+  document.addEventListener('keydown', function(e){ if(e.key==='Escape')closeLb(); if(e.key==='ArrowLeft')lbNav(-1); if(e.key==='ArrowRight')lbNav(1); });
+}
+</script>
+</body>
+</html>

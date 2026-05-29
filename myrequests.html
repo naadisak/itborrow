@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>คำขอของฉัน — IT Borrow System</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>body{font-family:'Sarabun',sans-serif;}</style>
+</head>
+<body class="bg-gray-100 min-h-screen">
+
+<div id="layout-wrapper" class="ml-64 pt-16 min-h-screen">
+  <main class="p-6">
+    <div class="mb-6"><h1 class="text-xl font-bold text-gray-900">คำขอของฉัน</h1>
+    <p class="text-sm text-gray-500 mt-0.5">ประวัติการยืม-คืนอุปกรณ์ทั้งหมด</p></div>
+
+    <!-- Filter tabs -->
+    <div class="flex gap-2 mb-5 flex-wrap">
+      <button onclick="setTab('all')" id="tab-all" class="tab-btn px-4 py-2 rounded-xl text-sm font-semibold transition bg-blue-600 text-white">ทั้งหมด</button>
+      <button onclick="setTab('pending')" id="tab-pending" class="tab-btn px-4 py-2 rounded-xl text-sm font-semibold transition bg-white border border-gray-200 text-gray-600 hover:bg-gray-50">รออนุมัติ</button>
+      <button onclick="setTab('active')" id="tab-active" class="tab-btn px-4 py-2 rounded-xl text-sm font-semibold transition bg-white border border-gray-200 text-gray-600 hover:bg-gray-50">กำลังยืม</button>
+      <button onclick="setTab('returned')" id="tab-returned" class="tab-btn px-4 py-2 rounded-xl text-sm font-semibold transition bg-white border border-gray-200 text-gray-600 hover:bg-gray-50">คืนแล้ว</button>
+    </div>
+
+    <div id="req-list"><div class="flex items-center justify-center py-16 text-gray-400"><svg class="animate-spin w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path></svg>กำลังโหลด...</div></div>
+  </main>
+</div>
+
+<div id="toast" class="fixed bottom-6 right-6 px-4 py-3 rounded-xl text-sm font-medium shadow-lg z-50 opacity-0 transition-opacity pointer-events-none"></div>
+
+<script src="js/config.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/layout.js"></script>
+<script>
+var ME = requireAuth();
+if (ME) {
+  if (ME.role === 'admin') { window.location.href = 'approve.html'; }
+  renderLayout('myrequests');
+
+  var ALL = [], CUR_TAB = 'all';
+  loadRequests();
+
+  function loadRequests() {
+    api({ action: 'getMyRequests', empId: ME.empId }).then(function(data) {
+      ALL = data.requests || [];
+      renderList();
+    });
+  }
+
+  function setTab(tab) {
+    CUR_TAB = tab;
+    document.querySelectorAll('.tab-btn').forEach(function(b) {
+      b.className = 'tab-btn px-4 py-2 rounded-xl text-sm font-semibold transition bg-white border border-gray-200 text-gray-600 hover:bg-gray-50';
+    });
+    document.getElementById('tab-' + tab).className = 'tab-btn px-4 py-2 rounded-xl text-sm font-semibold transition bg-blue-600 text-white';
+    renderList();
+  }
+
+  function renderList() {
+    var items = CUR_TAB === 'all' ? ALL : ALL.filter(function(r){ return r.status === CUR_TAB || (CUR_TAB === 'active' && r.status === 'pending_return'); });
+    var el = document.getElementById('req-list');
+    if (!items.length) { el.innerHTML = '<div class="bg-white rounded-2xl border border-gray-200 text-center py-16 text-sm text-gray-400">ไม่มีรายการ</div>'; return; }
+
+    var statusMap = { pending:'รออนุมัติ', active:'กำลังยืม', pending_return:'รอยืนยันคืน', returned:'คืนแล้ว', rejected:'ปฏิเสธ', approved:'อนุมัติ' };
+    var colorMap = { pending:'bg-yellow-100 text-yellow-700', active:'bg-blue-100 text-blue-700', pending_return:'bg-purple-100 text-purple-700', returned:'bg-green-100 text-green-700', rejected:'bg-red-100 text-red-700' };
+
+    el.innerHTML = '<div class="space-y-3">' + items.map(function(r) {
+      var cls = colorMap[r.status] || 'bg-gray-100 text-gray-600';
+      var canReturn = r.status === 'active';
+      return '<div class="bg-white rounded-2xl border border-gray-200 p-5">'
+        + '<div class="flex items-start justify-between gap-3 mb-3">'
+        + '<div><p class="font-semibold text-gray-900 text-sm">' + r.requestId + '</p>'
+        + '<p class="text-xs text-gray-400 mt-0.5">' + r.requestedAt + '</p></div>'
+        + '<span class="px-2.5 py-1 rounded-full text-xs font-semibold flex-shrink-0 ' + cls + '">' + (statusMap[r.status]||r.status) + '</span>'
+        + '</div>'
+        + '<div class="text-sm text-gray-600 space-y-1 mb-3">'
+        + '<p><span class="font-medium text-gray-700">วัตถุประสงค์:</span> ' + (r.purpose||'—') + '</p>'
+        + '<p><span class="font-medium text-gray-700">วันคืน:</span> ' + (r.returnDateFinal || r.returnDateProposed || '—') + '</p>'
+        + (r.adminNote ? '<p><span class="font-medium text-gray-700">หมายเหตุ:</span> ' + r.adminNote + '</p>' : '')
+        + '</div>'
+        + (canReturn
+          ? '<button onclick="requestReturn(\''+r.requestId+'\')" class="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-xs font-semibold transition">แจ้งคืนอุปกรณ์</button>'
+          : '')
+        + '</div>';
+    }).join('') + '</div>';
+  }
+
+  function requestReturn(reqId) {
+    if (!confirm('ยืนยันการแจ้งคืนอุปกรณ์คำขอ ' + reqId + '?')) return;
+    api({ action: 'requestReturn', requestId: reqId, empId: ME.empId })
+      .then(function(d) {
+        if (d.error) throw new Error(d.error);
+        showToast('แจ้งคืนเรียบร้อย รอ admin ยืนยัน', 'ok');
+        loadRequests();
+      }).catch(function(err) { showToast(err.message, 'error'); });
+  }
+}
+</script>
+</body>
+</html>
