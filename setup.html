@@ -2,119 +2,86 @@
 <html lang="th">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Setup Guide — IT Borrow System</title>
-<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Setup — IT Borrow System</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'Sarabun', sans-serif; background: #f8fafc; color: #1a202c; padding: 40px 20px; }
-  .container { max-width: 760px; margin: 0 auto; }
-  h1 { font-size: 26px; font-weight: 700; margin-bottom: 8px; color: #1a56db; }
-  .subtitle { color: #6b7280; margin-bottom: 32px; }
-  .step {
-    background: #fff;
-    border-radius: 12px;
-    padding: 24px;
-    margin-bottom: 20px;
-    box-shadow: 0 1px 4px rgba(0,0,0,.08);
-    border-left: 4px solid #1a56db;
-  }
-  .step-num {
-    display: inline-flex; align-items: center; justify-content: center;
-    width: 28px; height: 28px;
-    background: #1a56db; color: #fff;
-    border-radius: 50%; font-weight: 700; font-size: 14px;
-    margin-right: 10px; flex-shrink: 0; float: left;
-  }
-  .step h2 { font-size: 17px; font-weight: 600; margin-bottom: 12px; display: flex; align-items: center; }
-  .step p, .step li { font-size: 15px; line-height: 1.7; color: #374151; }
-  .step ol, .step ul { padding-left: 20px; margin-top: 8px; }
-  .step li { margin-bottom: 6px; }
-  code {
-    background: #f1f5f9;
-    color: #0f766e;
-    padding: 2px 7px;
-    border-radius: 4px;
-    font-family: 'Courier New', monospace;
-    font-size: 13px;
-  }
-  .code-block {
-    background: #1e293b;
-    color: #e2e8f0;
-    padding: 14px 18px;
-    border-radius: 8px;
-    font-family: 'Courier New', monospace;
-    font-size: 13px;
-    line-height: 1.6;
-    margin-top: 10px;
-    overflow-x: auto;
-    white-space: pre;
-  }
-  .highlight { background: #fef9c3; border-left: 4px solid #f59e0b; padding: 12px 16px; border-radius: 0 8px 8px 0; margin-top: 12px; font-size: 14px; }
-  .done-link { display: inline-block; margin-top: 24px; padding: 12px 28px; background: #1a56db; color: #fff; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 16px; }
-  .done-link:hover { background: #1648c0; }
-  .tag { display: inline-block; background: #dbeafe; color: #1d4ed8; padding: 2px 8px; border-radius: 4px; font-size: 12px; font-weight: 600; margin-left: 6px; }
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Sarabun',sans-serif;background:#f8fafc;color:#1e293b;padding:40px 20px;font-size:14px}
+.wrap{max-width:720px;margin:0 auto}
+h1{font-size:24px;font-weight:700;color:#1e40af;margin-bottom:6px}
+.sub{color:#64748b;margin-bottom:32px}
+.step{background:#fff;border-radius:12px;padding:22px;margin-bottom:18px;border-left:4px solid #1e40af;border:1px solid #e2e8f0;border-left:4px solid #1e40af}
+.step h2{font-size:16px;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:10px}
+.num{width:26px;height:26px;background:#1e40af;color:#fff;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0}
+p,li{line-height:1.8;color:#374151}
+ol,ul{padding-left:18px;margin-top:6px}
+li{margin-bottom:4px}
+code{background:#f1f5f9;color:#0f766e;padding:2px 6px;border-radius:4px;font-size:12px;font-family:monospace}
+pre{background:#1e293b;color:#e2e8f0;padding:14px 16px;border-radius:8px;font-size:12px;overflow-x:auto;margin-top:8px;line-height:1.6;font-family:monospace}
+.note{background:#fef3c7;border:1px solid #fde68a;border-radius:8px;padding:10px 14px;font-size:13px;color:#92400e;margin-top:10px}
+.go{display:inline-block;margin-top:24px;padding:12px 28px;background:#1e40af;color:#fff;border-radius:8px;font-weight:700;font-size:15px;text-decoration:none}
+.go:hover{background:#1e3a8a}
 </style>
 </head>
 <body>
-<div class="container">
+<div class="wrap">
+<h1>⚙️ Setup Guide — IT Borrow System</h1>
+<p class="sub">ทำตาม 5 ขั้นตอน ใช้เวลาประมาณ 15 นาที</p>
 
-  <h1>⚙️ คู่มือติดตั้งระบบยืม-คืนอุปกรณ์ไอที</h1>
-  <p class="subtitle">ทำตาม 4 ขั้นตอนนี้ ใช้เวลาประมาณ 10 นาที</p>
+<div class="step">
+<h2><span class="num">1</span> สร้าง Google Apps Script</h2>
+<ol>
+  <li>เปิด Google Sheet → เมนู <strong>Extensions → Apps Script</strong></li>
+  <li>ลบ code เดิม แล้ววาง code จากไฟล์ <code>apps-script.gs</code></li>
+  <li>บันทึก (Ctrl+S)</li>
+</ol>
+</div>
 
-  <!-- STEP 1 -->
-  <div class="step">
-    <h2><span class="step-num">1</span> สร้าง Google Apps Script</h2>
-    <ol>
-      <li>เปิด <strong>Google Sheet</strong> ที่เก็บข้อมูลการยืม</li>
-      <li>คลิกเมนู <strong>Extensions → Apps Script</strong></li>
-      <li>ลบ code เดิมออกทั้งหมด แล้ว <strong>วาง code จากไฟล์ <code>apps-script.gs</code></strong></li>
-      <li>ตรวจสอบตัวแปรนี้ว่าตรงกับชื่อ tab ของ Sheet:</li>
-    </ol>
-    <div class="code-block">var SHEET_NAME = 'การตอบสนองของแบบฟอร์ม 1'; // ← แก้ให้ตรงกับชื่อ tab</div>
-    <div class="highlight">💡 ดูชื่อ tab ได้ที่แถบด้านล่างของ Google Sheet</div>
-  </div>
+<div class="step">
+<h2><span class="num">2</span> สร้าง Sheet tabs (รันครั้งเดียว)</h2>
+<ol>
+  <li>ใน Apps Script กด <strong>Run → initSheets</strong></li>
+  <li>อนุญาต permission ที่ขอ (Google จะถาม)</li>
+  <li>จะสร้าง 5 tabs อัตโนมัติ: <code>employees</code>, <code>equipment</code>, <code>requests</code>, <code>request_items</code>, <code>stock_log</code></li>
+</ol>
+<div class="note">⚠️ ถ้า tab ชื่อ <strong>การตอบสนองของแบบฟอร์ม 1</strong> มีอยู่แล้ว ไม่ต้องลบ — ระบบใหม่ใช้ tabs แยกต่างหาก</div>
+</div>
 
-  <!-- STEP 2 -->
-  <div class="step">
-    <h2><span class="step-num">2</span> Deploy Apps Script เป็น Web App</h2>
-    <ol>
-      <li>กด <strong>Deploy → New deployment</strong></li>
-      <li>Type: เลือก <strong>Web app</strong></li>
-      <li>Execute as: <strong>Me</strong></li>
-      <li>Who has access: <strong>Anyone</strong></li>
-      <li>กด <strong>Deploy</strong> แล้ว Copy <strong>Web app URL</strong></li>
-    </ol>
-    <div class="highlight">
-      ⚠️ ถ้าแก้ไข code แล้ว ต้อง Deploy ใหม่ทุกครั้ง (<strong>Deploy → Manage deployments → Edit → New version</strong>)
-    </div>
-  </div>
+<div class="step">
+<h2><span class="num">3</span> กรอกข้อมูลพนักงาน</h2>
+<p>เปิด tab <code>employees</code> แล้วกรอกข้อมูล:</p>
+<pre>empId  | firstName | lastName    | dept      | phone | email              | role
+511401 | อภิชาติ    | ทรัพย์ไพบูลย์ | IT        | 7777  | it@tqm.co.th       | admin
+662417 | ปัณณ์สิตา  | คล้ายอ่อน    | HRD       | 3020  | phansita@tqm.co.th | user
+652402 | กิตติยาภรณ์| วิลา         | สหกรณ์    | 7782  |                    | user</pre>
+<div class="note">role ต้องเป็น <code>admin</code> หรือ <code>user</code> ตัวพิมพ์เล็กเท่านั้น</div>
+</div>
 
-  <!-- STEP 3 -->
-  <div class="step">
-    <h2><span class="step-num">3</span> ใส่ URL ใน index.html</h2>
-    <p>เปิดไฟล์ <code>index.html</code> แก้ไขส่วนนี้:</p>
-    <div class="code-block">var APPS_SCRIPT_URL = '<span style="color:#fbbf24">YOUR_APPS_SCRIPT_WEB_APP_URL</span>'; // ← วาง URL จาก Step 2
-var GOOGLE_FORM_URL = '<span style="color:#fbbf24">YOUR_GOOGLE_FORM_URL</span>';         // ← URL Google Form ยืมอุปกรณ์</div>
-    <div class="highlight">💡 URL Google Form หาได้จาก Google Form → Send → ไอคอน link 🔗</div>
-  </div>
+<div class="step">
+<h2><span class="num">4</span> Deploy Apps Script เป็น Web App</h2>
+<ol>
+  <li>กด <strong>Deploy → New deployment</strong></li>
+  <li>Type: <strong>Web app</strong></li>
+  <li>Execute as: <strong>Me</strong></li>
+  <li>Who has access: <strong>Anyone</strong></li>
+  <li>กด Deploy → Copy <strong>Web app URL</strong></li>
+</ol>
+<div class="note">⚠️ ทุกครั้งที่แก้ code ต้อง Deploy ใหม่ → <strong>Manage deployments → Edit → New version</strong></div>
+</div>
 
-  <!-- STEP 4 -->
-  <div class="step">
-    <h2><span class="step-num">4</span> Push ขึ้น GitHub Pages</h2>
-    <ol>
-      <li>ไปที่ <a href="https://github.com/naadisak/itborrow" target="_blank">github.com/naadisak/itborrow</a></li>
-      <li>Upload ไฟล์ <code>index.html</code> (และ <code>setup.html</code> ถ้าต้องการ)</li>
-      <li>ไปที่ <strong>Settings → Pages</strong></li>
-      <li>Source: <strong>Deploy from a branch</strong> → branch <strong>main</strong> → folder <strong>/ (root)</strong></li>
-      <li>กด Save — รอ 1-2 นาที จะได้ URL: <code>https://naadisak.github.io/itborrow/</code></li>
-    </ol>
-  </div>
+<div class="step">
+<h2><span class="num">5</span> ใส่ URL ใน index.html แล้ว Push ขึ้น GitHub</h2>
+<p>เปิด <code>index.html</code> แก้ไขบรรทัดนี้:</p>
+<pre>var API_URL  = 'YOUR_APPS_SCRIPT_WEB_APP_URL'; // ← วาง URL จาก Step 4</pre>
+<ol style="margin-top:10px">
+  <li>Push ไฟล์ <code>index.html</code> ขึ้น <a href="https://github.com/naadisak/itborrow" target="_blank">github.com/naadisak/itborrow</a></li>
+  <li>Settings → Pages → Source: main / root → Save</li>
+  <li>รอ 1-2 นาที → เข้าใช้งานที่ <code>naadisak.github.io/itborrow</code></li>
+</ol>
+</div>
 
-  <div style="text-align:center; margin-top:32px">
-    <a href="index.html" class="done-link">🚀 ไปที่ระบบ →</a>
-  </div>
-
+<a href="index.html" class="go">🚀 เปิดระบบ →</a>
 </div>
 </body>
 </html>
