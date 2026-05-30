@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nexus IT Ecosystem</title>
+  <script src="[https://cdn.tailwindcss.com](https://cdn.tailwindcss.com)"></script>
+  <link rel="preconnect" href="[https://fonts.googleapis.com](https://fonts.googleapis.com)">
+  <link rel="preconnect" href="[https://fonts.gstatic.com](https://fonts.gstatic.com)" crossorigin>
+  <link href="[https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Sarabun:wght@300;400;500;600;700&display=swap](https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Sarabun:wght@300;400;500;600;700&display=swap)" rel="stylesheet">
+  <link rel="stylesheet" href="[https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css](https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css)">
+  <style>
+    body { font-family: 'Inter', 'Sarabun', sans-serif; background-color: #f8fafc; }
+    .luxury-shadow { box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.05); }
+    .glass-nav { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(12px); }
+  </style>
+</head>
+<body class="text-slate-800 antialiased min-height-screen pb-12">
+
+  <nav class="glass-nav sticky top-0 z-50 border-b border-slate-100 luxury-shadow px-4 py-3">
+    <div class="max-w-6xl mx-auto flex justify-between items-center">
+      <div class="flex items-center gap-3">
+        <div class="h-10 w-10 rounded-xl bg-emerald-600 flex items-center justify-center text-white shadow-md shadow-emerald-200">
+          <i class="fa-solid fa-cube text-xl"></i>
+        </div>
+        <div>
+          <span class="block font-bold text-lg tracking-wider text-slate-900">NEXUS IT</span>
+          <span class="block text-xs font-medium tracking-widest text-emerald-600 uppercase">Premium Ecosystem</span>
+        </div>
+      </div>
+      
+      <div class="flex gap-1 bg-slate-100 p-1 rounded-xl text-sm font-medium">
+        <button onclick="switchTab('user-tab')" id="btn-user-tab" class="px-4 py-2 rounded-lg bg-white text-slate-900 shadow-sm transition">พนักงาน</button>
+        <button onclick="switchTab('admin-tab')" id="btn-admin-tab" class="px-4 py-2 rounded-lg text-slate-500 hover:text-slate-900 transition">ผู้ดูแลระบบ</button>
+      </div>
+    </div>
+  </nav>
+
+  <main class="max-w-6xl mx-auto px-4 mt-8">
+    
+    <div id="user-tab" class="tab-content space-y-8">
+      
+      <div class="bg-white rounded-3xl p-6 border border-slate-100 luxury-shadow flex flex-col sm:flex-row items-center gap-6">
+        <div class="relative group cursor-pointer">
+          <div class="w-28 h-28 rounded-full overflow-hidden border-4 border-slate-50 bg-slate-100 luxury-shadow relative">
+            <img id="user-avatar" src="[https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=256](https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=256)" class="w-full h-full object-cover" alt="Avatar">
+          </div>
+          <label for="avatar-input" class="absolute bottom-0 right-0 h-8 w-8 bg-emerald-600 rounded-full flex items-center justify-center text-white text-xs cursor-pointer hover:scale-110 transition shadow-lg shadow-emerald-200">
+            <i class="fa-solid fa-camera"></i>
+          </label>
+          <input type="file" id="avatar-input" accept="image/*" class="hidden" onchange="handleAvatarUpload(this)">
+        </div>
+        
+        <div class="text-center sm:text-left flex-1 space-y-1">
+          <div class="flex flex-col sm:flex-row sm:items-center gap-2">
+            <h2 id="user-name" class="text-2xl font-bold text-slate-900">กำลังดึงข้อมูล...</h2>
+            <span id="user-dept" class="inline-block px-3 py-1 bg-slate-100 text-slate-600 text-xs font-semibold rounded-full uppercase tracking-wider self-center sm:self-auto">---</span>
+          </div>
+          <p class="text-slate-500 text-sm">รหัสพนักงาน: <span id="display-emp-id" class="font-mono">EMP-001</span></p>
+          <p class="text-xs text-slate-400 italic">✨ สามารถกดที่กล้องถ่ายรูปเพื่อเปลี่ยนรูปภาพประจำตัวอันพรีเมียมของคุณ</p>
+        </div>
+
+        <div class="border-t sm:border-t-0 sm:border-l border-slate-100 pt-4 sm:pt-0 sm:pl-6 flex flex-col items-center sm:items-start gap-2">
+          <label class="text-xs font-semibold text-slate-400 uppercase tracking-wider">สลับบัญชีทดสอบ</label>
+          <select id="sim-user-select" onchange="changeSimulatedUser(this.value)" class="bg-slate-50 border border-slate-200 text-sm rounded-xl px-3 py-2 outline-none focus:border-emerald-500 transition">
+            </select>
+        </div>
+      </div>
+
+      <div class="space-y-4">
+        <div class="flex justify-between items-center">
+          <h3 class="text-xl font-bold tracking-tight text-slate-900">🌟 คลังอุปกรณ์พร้อมให้ยืม</h3>
+          <div class="flex gap-2">
+            <select id="filter-category" onchange="renderCatalog()" class="bg-white border border-slate-200 text-xs rounded-xl px-3 py-2 font-medium text-slate-600 outline-none luxury-shadow">
+              <option value="All">ทุกหมวดหมู่</option>
+            </select>
+          </div>
+        </div>
+        
+        <div id="catalog-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+          </div>
+      </div>
+
+      <div class="bg-white rounded-3xl border border-slate-100 luxury-shadow overflow-hidden">
+        <div class="px-6 py-4 border-b border-slate-50 flex justify-between items-center">
+          <h3 class="font-bold text-slate-900">📦 ประวัติการยืม-คืนของคุณ</h3>
+          <i class="fa-solid fa-clock-rotate-left text-slate-400"></i>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-sm">
+            <thead class="bg-slate-50 text-slate-500 font-semibold uppercase text-xs tracking-wider border-b border-slate-100">
+              <tr>
+                <th class="px-6 py-4">เลขรายการ</th>
+                <th class="px-6 py-4">อุปกรณ์</th>
+                <th class="px-6 py-4">วันที่ยืม</th>
+                <th class="px-6 py-4">กำหนดคืน</th>
+                <th class="px-6 py-4">สถานะ</th>
+              </tr>
+            </thead>
+            <tbody id="user-history-table" class="divide-y divide-slate-100">
+              </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+
+    <div id="admin-tab" class="tab-content space-y-8 hidden">
+      
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div class="bg-white rounded-2xl p-5 border border-slate-100 luxury-shadow text-center">
+          <span class="block text-slate-400 text-xs font-bold tracking-wider uppercase">อุปกรณ์ทั้งหมด</span>
+          <span id="stat-total-items" class="block text-3xl font-bold text-slate-900 mt-1">0</span>
+        </div>
+        <div class="bg-white rounded-2xl p-5 border border-slate-100 luxury-shadow text-center">
+          <span class="block text-slate-400 text-xs font-bold tracking-wider uppercase text-amber-600">รออนุมัติ</span>
+          <span id="stat-pending-requests" class="block text-3xl font-bold text-amber-600 mt-1">0</span>
+        </div>
+        <div class="bg-white rounded-2xl p-5 border border-slate-100 luxury-shadow text-center">
+          <span class="block text-slate-400 text-xs font-bold tracking-wider uppercase text-emerald-600">ถูกยืมอยู่</span>
+          <span id="stat-borrowed-items" class="block text-3xl font-bold text-emerald-600 mt-1">0</span>
+        </div>
+        <div class="bg-white rounded-2xl p-5 border border-slate-100 luxury-shadow text-center">
+          <span class="block text-slate-400 text-xs font-bold tracking-wider uppercase text-blue-600">ส่งซ่อม</span>
+          <span id="stat-maintenance-items" class="block text-3xl font-bold text-blue-600 mt-1">0</span>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div class="bg-white rounded-3xl p-6 border border-slate-100 luxury-shadow space-y-4">
+          <h3 class="text-lg font-bold text-slate-900"><i class="fa-solid fa-plus-circle text-emerald-500 mr-2"></i>เพิ่มอุปกรณ์ใหม่เข้าระบบ</h3>
+          <form id="add-item-form" onsubmit="submitAddItem(event)" class="space-y-3">
+            <div>
+              <label class="block text-xs font-semibold text-slate-500 mb-1">รหัสทรัพย์สิน (Item ID)</label>
+              <input type="text" id="new-item-id" required placeholder="เช่น IT-NB-025" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 text-sm outline-none focus:border-emerald-500 transition">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-500 mb-1">ชื่ออุปกรณ์ (Item Name)</label>
+              <input type="text" id="new-item-name" required placeholder="เช่น iPad Pro M4" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 text-sm outline-none focus:border-emerald-500 transition">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-500 mb-1">หมวดหมู่อุปกรณ์</label>
+              <select id="new-item-category" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 text-sm outline-none focus:border-emerald-500 transition">
+                </select>
+            </div>
+            <button type="submit" class="w-full bg-slate-900 text-white font-medium text-sm py-2.5 rounded-xl hover:bg-slate-800 transition shadow-lg">บันทึกอุปกรณ์ใหม่</button>
+          </form>
+        </div>
+
+        <div class="bg-white rounded-3xl p-6 border border-slate-100 luxury-shadow space-y-4">
+          <div class="flex justify-between items-center">
+            <h3 class="text-lg font-bold text-slate-900"><i class="fa-solid fa-paste text-amber-500 mr-2"></i>Smart Paste (ตรวจสอบรายชื่อ)</h3>
+            <span class="text-[10px] bg-slate-100 px-2 py-0.5 font-bold rounded-md text-slate-500">TAB-DELIMITED</span>
+          </div>
+          <p class="text-xs text-slate-400">คัดลอกตารางจาก Excel/Sheets วางลงช่องนี้เพื่อตรวจสอบว่ามีรายชื่อซ้ำในระบบหรือไม่</p>
+          <textarea id="smart-paste-area" rows="3" placeholder="รหัสพนักงาน&#9;ชื่อพนักงาน&#9;แผนก&#10;EMP010&#9;สมชาย เรียนดี&#9;IT" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs font-mono outline-none focus:border-amber-500 transition"></textarea>
+          <button onclick="processSmartPaste()" class="w-full bg-amber-500 hover:bg-amber-600 text-white font-medium text-sm py-2.5 rounded-xl transition shadow-md shadow-amber-100">ตรวจสอบความถูกต้อง</button>
+          
+          <div id="smart-paste-result-box" class="hidden text-xs bg-slate-50 p-3 rounded-xl border border-slate-100 max-h-32 overflow-y-auto space-y-1">
+            </div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-3xl border border-slate-100 luxury-shadow overflow-hidden">
+        <div class="px-6 py-4 border-b border-slate-50 bg-amber-50/50">
+          <h3 class="font-bold text-slate-900 text-amber-800"><i class="fa-solid fa-stamp mr-2"></i>รายการคำขอยืมที่รอการอนุมัติ</h3>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-sm">
+            <thead class="bg-slate-50 text-slate-500 font-semibold uppercase text-xs tracking-wider border-b border-slate-100">
+              <tr>
+                <th class="px-6 py-4">ผู้ยืม</th>
+                <th class="px-6 py-4">อุปกรณ์</th>
+                <th class="px-6 py-4">วันที่ขอยืม</th>
+                <th class="px-6 py-4">กำหนดคืน</th>
+                <th class="px-6 py-4 text-right">การจัดการ</th>
+              </tr>
+            </thead>
+            <tbody id="admin-pending-table" class="divide-y divide-slate-100">
+              </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-3xl border border-slate-100 luxury-shadow overflow-hidden">
+        <div class="px-6 py-4 border-b border-slate-50 flex justify-between items-center">
+          <h3 class="font-bold text-slate-900">🔄 รายการอุปกรณ์ที่อยู่ระหว่างการยืม</h3>
+          <i class="fa-solid fa-arrows-spin text-slate-400 animate-spin-slow"></i>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-sm">
+            <thead class="bg-slate-50 text-slate-500 font-semibold uppercase text-xs tracking-wider border-b border-slate-100">
+              <tr>
+                <th class="px-6 py-4">ผู้ยืม</th>
+                <th class="px-6 py-4">อุปกรณ์</th>
+                <th class="px-6 py-4">วันที่ยืม</th>
+                <th class="px-6 py-4">กำหนดคืน</th>
+                <th class="px-6 py-4 text-right">ลงบันทึกรับคืน</th>
+              </tr>
+            </thead>
+            <tbody id="admin-active-loans-table" class="divide-y divide-slate-100">
+              </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <div id="borrow-modal" class="fixed inset-0 bg-slate-900/40 backdrop-filter blur-sm hidden flex items-center justify-center z-50 p-4">
+    <div class="bg-white rounded-3xl p-6 max-w-sm w-full border border-slate-100 luxury-shadow space-y-4">
+      <div class="flex justify-between items-center">
+        <h4 class="font-bold text-lg text-slate-900">ยื่นคำขอยืมอุปกรณ์</h4>
+        <button onclick="closeBorrowModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-times"></i></button>
+      </div>
+      <div class="bg-slate-50 p-3 rounded-xl border border-slate-100">
+        <span class="block text-xs font-bold text-emerald-600 uppercase tracking-wider" id="modal-item-id">IT-NB-001</span>
+        <span class="block text-slate-900 font-medium" id="modal-item-name">MacBook Pro M3</span>
+      </div>
+      <div>
+        <label class="block text-xs font-semibold text-slate-500 mb-1">เลือกวันที่ต้องการส่งคืน</label>
+        <input type="date" id="modal-due-date" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 text-sm outline-none focus:border-emerald-500 transition">
+      </div>
+      <button onclick="submitBorrowRequest()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium text-sm py-2.5 rounded-xl transition shadow-lg shadow-emerald-100">ส่งคำขอยืม</button>
+    </div>
+  </div>
+
+  <script>
+    // ⚠️ นำพิกัด URL ของ Google Apps Script Web App มาใส่ตรงนี้
+    const API_URL = "ใส่_WEB_APP_URL_จาก_APPS_SCRIPT_ที่นี่";
+
+    // Application Global State
+    let state = {
+      currentUser: null,
+      users: [],
+      equipments: [],
+      transactions: [],
+      categories: [],
+      selectedItemForBorrow: null
+    };
+
+    // Initialization
+    window.addEventListener('DOMContentLoaded', () => {
+      fetchData();
+    });
+
+    async function fetchData() {
+      if(API_URL.includes("ใส่_WEB_APP_URL_จาก_APPS_SCRIPT_ที่นี่")) {
+        alert("กรุณาตั้งค่า API_URL ในแท็ก <script> หน้า Frontend ให้เรียบร้อยก่อนเริ่มต้นระบบครับอ้ายหำ!");
+        return;
+      }
+      
+      try {
+        const response = await fetch(`${API_URL}?action=getAdminDashboard`);
+        const result = await response.json();
+        
+        if(result.status === "success") {
+          state.users = result.users;
+          state.equipments = result.equipments;
+          state.transactions = result.transactions;
+          
+          // ดึง Categories แบบไม่ซ้ำ
+          state.categories = [...new Set(result.equipments.map(e => e.Category))];
+          
+          // จำลองการ Login ของผู้ใช้งานคนแรกใน Sheet
+          if(!state.currentUser && state.users.length > 0) {
+            state.currentUser = state.users[0];
+          }
+          
+          initUIElements();
+          renderUserInterface();
+          renderAdminInterface();
+        }
+      } catch (err) {
+        console.error("Fetch Data Error: ", err);
+      }
+    }
+
+    function initUIElements() {
+      // Setup Sim User Selector
+      const select = document.getElementById('sim-user-select');
+      select.innerHTML = state.users.map(u => `<option value="${u.Emp_ID}">${u.Full_Name}</option>`).join('');
+      select.value = state.currentUser ? state.currentUser.Emp_ID : "";
+
+      // Setup Filter Categories
+      const filter = document.getElementById('filter-category');
+      filter.innerHTML = '<option value="All">ทุกหมวดหมู่</option>' + state.categories.map(c => `<option value="${c}">${c}</option>`).join('');
+
+      // Setup Add Item Categories Select
+      const addSelect = document.getElementById('new-item-category');
+      addSelect.innerHTML = state.categories.map(c => `<option value="${c}">${c}</option>`).join('');
+    }
+
+    function renderUserInterface() {
+      if(!state.currentUser) return;
+
+      // Update User Banner Cards
+      document.getElementById('user-name').innerText = state.currentUser.Full_Name;
+      document.getElementById('user-dept').innerText = state.currentUser.Department;
+      document.getElementById('display-emp-id').innerText = state.currentUser.Emp_ID;
+      if(state.currentUser.Avatar_URL) {
+        document.getElementById('user-avatar').src = state.currentUser.Avatar_URL;
+      } else {
+        document.getElementById('user-avatar').src = "[https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=256](https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=256)";
+      }
+
+      renderCatalog();
+      renderUserHistory();
+    }
+
+    function renderCatalog() {
+      const grid = document.getElementById('catalog-grid');
+      const filterValue = document.getElementById('filter-category').value;
+      
+      let itemsToRender = state.equipments;
+      if(filterValue !== "All") {
+        itemsToRender = itemsToRender.filter(i => i.Category === filterValue);
+      }
+
+      grid.innerHTML = itemsToRender.map(item => {
+        let statusBadge = '';
+        let actionButton = '';
+
+        if(item.Status === 'Available') {
+          statusBadge = `<span class="bg-emerald-50 text-emerald-700 text-[11px] font-bold px-2.5 py-1 rounded-full"><i class="fa-solid fa-circle text-[8px] mr-1.5 align-middle"></i>พร้อมให้ยืม</span>`;
+          actionButton = `<button onclick="openBorrowModal('${item.Item_ID}', '${item.Item_Name}')" class="w-full bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold py-2 rounded-xl transition">ขอยืมอุปกรณ์</button>`;
+        } else if(item.Status === 'Borrowed') {
+          statusBadge = `<span class="bg-amber-50 text-amber-700 text-[11px] font-bold px-2.5 py-1 rounded-full"><i class="fa-solid fa-circle text-[8px] mr-1.5 align-middle"></i>ถูกยืมแล้ว</span>`;
+          actionButton = `<button disabled class="w-full bg-slate-100 text-slate-400 text-xs font-semibold py-2 rounded-xl cursor-not-allowed">ไม่ว่าง</button>`;
+        } else {
+          statusBadge = `<span class="bg-slate-100 text-slate-500 text-[11px] font-bold px-2.5 py-1 rounded-full">ส่งซ่อม</span>`;
+          actionButton = `<button disabled class="w-full bg-slate-100 text-slate-400 text-xs font-semibold py-2 rounded-xl cursor-not-allowed">งดใช้งาน</button>`;
+        }
+
+        return `
+          <div class="bg-white rounded-2xl p-5 border border-slate-100 luxury-shadow flex flex-col justify-between space-y-4">
+            <div class="flex justify-between items-start">
+              <div>
+                <span class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider">${item.Category}</span>
+                <h4 class="font-bold text-slate-900 mt-0.5">${item.Item_Name}</h4>
+                <span class="block text-xs font-mono text-slate-400 mt-1">${item.Item_ID}</span>
+              </div>
+              ${statusBadge}
+            </div>
+            ${actionButton}
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderUserHistory() {
+      const tbody = document.getElementById('user-history-table');
+      const userTx = state.transactions.filter(t => t.Emp_ID.toString() === state.currentUser.Emp_ID.toString());
+
+      if(userTx.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" class="px-6 py-8 text-center text-slate-400 italic">ไม่มีประวัติการยืมอุปกรณ์ของคุณในขณะนี้</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = userTx.map(tx => {
+        let statusStyle = '';
+        if(tx.Status === 'Pending') statusStyle = 'bg-amber-50 text-amber-700';
+        else if(tx.Status === 'Approved') statusStyle = 'bg-blue-50 text-blue-700';
+        else if(tx.Status === 'Returned') statusStyle = 'bg-emerald-50 text-emerald-700';
+        else statusStyle = 'bg-rose-50 text-rose-700';
+
+        const eq = state.equipments.find(e => e.Item_ID === tx.Item_ID) || { Item_Name: tx.Item_ID };
+
+        return `
+          <tr class="hover:bg-slate-50/50 transition">
+            <td class="px-6 py-4 font-mono font-medium text-slate-600">${tx.Tx_ID}</td>
+            <td class="px-6 py-4 font-medium text-slate-900">${eq.Item_Name}</td>
+            <td class="px-6 py-4 text-slate-500 text-xs">${tx.Borrow_Date ? new Date(tx.Borrow_Date).toLocaleDateString('th-TH') : '-'}</td>
+            <td class="px-6 py-4 text-slate-500 text-xs">${tx.Due_Date ? new Date(tx.Due_Date).toLocaleDateString('th-TH') : '-'}</td>
+            <td class="px-6 py-4"><span class="px-2.5 py-1 text-xs font-semibold rounded-full ${statusStyle}">${tx.Status}</span></td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function renderAdminDashboardStats() {
+      document.getElementById('stat-total-items').innerText = state.equipments.length;
+      document.getElementById('stat-pending-requests').innerText = state.transactions.filter(t => t.Status === 'Pending').length;
+      document.getElementById('stat-borrowed-items').innerText = state.equipments.filter(e => e.Status === 'Borrowed').length;
+      document.getElementById('stat-maintenance-items').innerText = state.equipments.filter(e => e.Status === 'Maintenance').length;
+    }
+
+    function renderAdminInterface() {
+      renderAdminDashboardStats();
+
+      // Render Pending Approval Table
+      const pendingTbody = document.getElementById('admin-pending-table');
+      const pendingTx = state.transactions.filter(t => t.Status === 'Pending');
+
+      if(pendingTx.length === 0) {
+        pendingTbody.innerHTML = `<tr><td colspan="5" class="px-6 py-8 text-center text-slate-400 italic">ไม่มีรายการคำขอยืมค้างอนุมัติ</td></tr>`;
+      } else {
+        pendingTbody.innerHTML = pendingTx.map(tx => {
+          const u = state.users.find(user => user.Emp_ID.toString() === tx.Emp_ID.toString()) || { Full_Name: tx.Emp_ID };
+          const eq = state.equipments.find(e => e.Item_ID === tx.Item_ID) || { Item_Name: tx.Item_ID };
+          return `
+            <tr class="hover:bg-slate-50/50 transition">
+              <td class="px-6 py-4 font-medium text-slate-900">${u.Full_Name}</td>
+              <td class="px-6 py-4">${eq.Item_Name} <span class="block text-xs font-mono text-slate-400">${tx.Item_ID}</span></td>
+              <td class="px-6 py-4 text-xs text-slate-500">${new Date(tx.Borrow_Date).toLocaleDateString('th-TH')}</td>
+              <td class="px-6 py-4 text-xs text-slate-500">${new Date(tx.Due_Date).toLocaleDateString('th-TH')}</td>
+              <td class="px-6 py-4 text-right space-x-1">
+                <button onclick="adminAction('approve', '${tx.Tx_ID}', '${tx.Item_ID}')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs px-3 py-1.5 rounded-lg shadow-sm">อนุมัติ</button>
+                <button onclick="adminAction('reject', '${tx.Tx_ID}')" class="bg-slate-100 hover:bg-rose-50 text-slate-500 hover:text-rose-600 font-semibold text-xs px-3 py-1.5 rounded-lg border border-slate-200 transition">ปฏิเสธ</button>
+              </td>
+            </tr>
+          `;
+        }).join('');
+      }
+
+      // Render Active Loans Table
+      const activeTbody = document.getElementById('admin-active-loans-table');
+      const activeTx = state.transactions.filter(t => t.Status === 'Approved');
+
+      if(activeTx.length === 0) {
+        activeTbody.innerHTML = `<tr><td colspan="5" class="px-6 py-8 text-center text-slate-400 italic">ไม่มีอุปกรณ์ที่ถูกยืมอยู่ในขณะนี้</td></tr>`;
+      } else {
+        activeTbody.innerHTML = activeTx.map(tx => {
+          const u = state.users.find(user => user.Emp_ID.toString() === tx.Emp_ID.toString()) || { Full_Name: tx.Emp_ID };
+          const eq = state.equipments.find(e => e.Item_ID === tx.Item_ID) || { Item_Name: tx.Item_ID };
+          return `
+            <tr class="hover:bg-slate-50/50 transition">
+              <td class="px-6 py-4 font-medium text-slate-900">${u.Full_Name}</td>
+              <td class="px-6 py-4">${eq.Item_Name} <span class="block text-xs font-mono text-slate-400">${tx.Item_ID}</span></td>
+              <td class="px-6 py-4 text-xs text-slate-500">${new Date(tx.Borrow_Date).toLocaleDateString('th-TH')}</td>
+              <td class="px-6 py-4 text-xs text-slate-500">${new Date(tx.Due_Date).toLocaleDateString('th-TH')}</td>
+              <td class="px-6 py-4 text-right">
+                <button onclick="adminAction('return', '${tx.Tx_ID}', '${tx.Item_ID}')" class="bg-white hover:bg-emerald-50 text-emerald-600 border border-emerald-200 font-semibold text-xs px-3 py-1.5 rounded-lg transition shadow-sm">รับคืนแล้ว</button>
+              </td>
+            </tr>
+          `;
+        }).join('');
+      }
+    }
+
+    // Interactions
+    function changeSimulatedUser(empId) {
+      state.currentUser = state.users.find(u => u.Emp_ID.toString() === empId.toString());
+      renderUserInterface();
+    }
+
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+      document.getElementById(tabId).classList.remove('hidden');
+      
+      document.getElementById('btn-user-tab').className = tabId === 'user-tab' ? "px-4 py-2 rounded-lg bg-white text-slate-900 shadow-sm transition" : "px-4 py-2 rounded-lg text-slate-500 hover:text-slate-900 transition";
+      document.getElementById('btn-admin-tab').className = tabId === 'admin-tab' ? "px-4 py-2 rounded-lg bg-white text-slate-900 shadow-sm transition" : "px-4 py-2 rounded-lg text-slate-500 hover:text-slate-900 transition";
+    }
+
+    function openBorrowModal(itemId, itemName) {
+      state.selectedItemForBorrow = itemId;
+      document.getElementById('modal-item-id').innerText = itemId;
+      document.getElementById('modal-item-name').innerText = itemName;
+      document.getElementById('borrow-modal').classList.remove('hidden');
+    }
+
+    function closeBorrowModal() {
+      document.getElementById('borrow-modal').classList.add('hidden');
+      state.selectedItemForBorrow = null;
+    }
+
+    async function submitBorrowRequest() {
+      const dueDate = document.getElementById('modal-due-date').value;
+      if(!dueDate) { alert("กรุณาเลือกกำหนดวันส่งคืนก่อนส่งคำขอครับ"); return; }
+
+      const payload = {
+        action: "createBorrowRequest",
+        empId: state.currentUser.Emp_ID,
+        itemId: state.selectedItemForBorrow,
+        dueDate: dueDate
+      };
+
+      closeBorrowModal();
+      showLoading(true);
+
+      const response = await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) });
+      const result = await response.json();
+      alert(result.message);
+      fetchData();
+    }
+
+    async function adminAction(type, txId, itemId) {
+      let payload = { txId: txId, itemId: itemId };
+      if(type === 'approve') payload.action = 'approveRequest';
+      else if(type === 'reject') payload.action = 'rejectRequest';
+      else if(type === 'return') payload.action = 'returnEquipment';
+
+      showLoading(true);
+      const response = await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) });
+      const result = await response.json();
+      alert(result.message);
+      fetchData();
+    }
+
+    async function submitAddItem(event) {
+      event.preventDefault();
+      const payload = {
+        action: "addEquipment",
+        itemId: document.getElementById('new-item-id').value,
+        itemName: document.getElementById('new-item-name').value,
+        category: document.getElementById('new-item-category').value
+      };
+
+      showLoading(true);
+      const response = await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) });
+      const result = await response.json();
+      alert(result.message);
+      document.getElementById('add-item-form').reset();
+      fetchData();
+    }
+
+    // Avatar Upload Engine
+    function handleAvatarUpload(input) {
+      const file = input.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = async function(e) {
+        const base64Data = e.target.result;
+        const payload = {
+          action: "uploadAvatar",
+          empId: state.currentUser.Emp_ID,
+          base64Data: base64Data,
+          fileName: `${state.currentUser.Emp_ID}_avatar_${Date.now()}.png`
+        };
+
+        showLoading(true);
+        const response = await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) });
+        const result = await response.json();
+        
+        if (result.status === "success") {
+          alert("อัปโหลดรูปโปรไฟล์พรีเมียมของคุณขึ้นระเบียบสิทธิ์เรียบร้อยแล้ว!");
+          fetchData();
+        } else {
+          alert("Error: " + result.message);
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+
+    // Smart Paste Validation Implementation
+    async function processSmartPaste() {
+      const pasteData = document.getElementById('smart-paste-area').value.trim();
+      if(!pasteData) { alert("กรุณาวางข้อมูลก่อนตรวจสอบครับ"); return; }
+
+      const lines = pasteData.split('\n');
+      const rows = lines.map(line => {
+        const columns = line.split('\t');
+        return {
+          empId: columns[0] ? columns[0].trim() : '',
+          name: columns[1] ? columns[1].trim() : '',
+          dept: columns[2] ? columns[2].trim() : ''
+        };
+      }).filter(r => r.empId !== '');
+
+      const response = await fetch(API_URL, {
+        method: 'POST',
+        body: JSON.stringify({ action: "bulkValidateUsers", rows: rows })
+      });
+      const result = await response.json();
+
+      if(result.status === "success") {
+        const box = document.getElementById('smart-paste-result-box');
+        box.classList.remove('hidden');
+        box.innerHTML = result.results.map(r => `
+          <div class="flex justify-between border-b border-slate-100 pb-1 ${r.valid ? 'text-emerald-600' : 'text-rose-500 font-medium'}">
+            <span>🆔 ${r.empId} - ${r.name} (${r.dept})</span>
+            <span>${r.status}</span>
+          </div>
+        `).join('');
+      }
+    }
+
+    function showLoading(show) {
+      // สามารถเพิ่มดีไซน์ Loading Glassmorphism ทับหน้าจอตามใจชอบได้ที่นี่
+      console.log(show ? "Loading Active..." : "Loading Finished.");
+    }
+  </script>
+</body>
+</html>
